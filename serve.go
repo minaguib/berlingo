@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func do(ai AI, r io.Reader) (response *Response, response_json []byte, err error) {
@@ -31,7 +32,18 @@ func ServeHttp(ai AI, port string) {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Handling HTTP request from", r.RemoteAddr)
-		_, response_json, err := do(ai, r.Body)
+
+		r.ParseForm()
+		var input io.Reader
+		if r.Form["action"] != nil {
+			// Detect & work-around bug https://github.com/thirdside/berlin-ai/issues/4
+			j := `{ "action": "` + r.Form["action"][0] + `", "infos": ` + r.Form["infos"][0] + `, "map": ` + r.Form["map"][0] + `, "state": ` + r.Form["state"][0] + `}`
+			input = strings.NewReader(j)
+		} else {
+			input = r.Body
+		}
+
+		_, response_json, err := do(ai, input)
 		if err != nil {
 			fmt.Printf("Sending errors: %+v\n", err)
 			w.Write([]byte("Error"))
