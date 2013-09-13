@@ -26,6 +26,7 @@ func do(ai AI, r io.Reader) (response *Response, response_json []byte, err error
 	return response, response_json, nil
 }
 
+// ServeHttp serves the given AI over HTTP on the given port
 func ServeHttp(ai AI, port string) {
 
 	fmt.Println("Starting HTTP server on port", port)
@@ -59,6 +60,9 @@ func ServeHttp(ai AI, port string) {
 	}
 }
 
+// ServeHttp serves the given AI a single time
+// Request is read from the given filename
+// filename may be supplied as "-" to indicate STDIN
 func ServeFile(ai AI, filename string) {
 
 	var fh *os.File
@@ -83,6 +87,7 @@ func ServeFile(ai AI, filename string) {
 	os.Stdout.Write(response_json)
 }
 
+// Serve will inspect the CLI arguments and automatically call either ServeHttp or ServeFile
 func Serve(ai AI) {
 
 	port_or_filename := "-"

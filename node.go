@@ -1,5 +1,6 @@
 package berlingo
 
+// Node represents a single node on the Map
 type Node struct {
 	Map                *Map
 	Id                 int
@@ -20,14 +21,14 @@ func NewNode(m *Map) *Node {
 	}
 }
 
-// Sets up a unidirectional link
+// Sets up a unidirectional link pointing from this node towards another
 func (node *Node) link_to(other *Node) {
 	node.Paths_Outbound[other.Id] = other
 	other.Paths_Inbound[node.Id] = node
 }
 
 func (node *Node) IsOwned() bool {
-	return node.Player_Id == node.Map.My_Player_Id
+	return node.Player_Id == node.Map.Game.Player_Id
 }
 func (node *Node) reset() {
 	if node.IsOwned() {

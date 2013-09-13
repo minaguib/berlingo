@@ -6,19 +6,22 @@ type NodeType struct {
 	Number_Of_Soldiers int
 }
 
+// Map represents the map and the nodes in it
 type Map struct {
+	Game             *Game
 	NodeTypes        map[string]*NodeType
 	Nodes            map[int]*Node
-	My_Player_Id     int
 	controlled_nodes []*Node
 }
 
-func NewMap(request *Request) (m *Map, err error) {
+func NewMap(game *Game) (m *Map, err error) {
+
+	request := game.Request
 
 	m = &Map{
-		My_Player_Id: request.Infos.Player_Id,
-		NodeTypes:    make(map[string]*NodeType),
-		Nodes:        make(map[int]*Node),
+		Game:      game,
+		NodeTypes: make(map[string]*NodeType),
+		Nodes:     make(map[int]*Node),
 	}
 
 	for _, rt := range request.Map.Types {
@@ -57,7 +60,7 @@ func (m *Map) ControlledNodes() []*Node {
 	if m.controlled_nodes == nil {
 		m.controlled_nodes = make([]*Node, 0, len(m.Nodes)/2)
 		for _, node := range m.Nodes {
-			if node.Player_Id == m.My_Player_Id {
+			if node.Player_Id == m.Game.Player_Id {
 				m.controlled_nodes = append(m.controlled_nodes, node)
 			}
 		}

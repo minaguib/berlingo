@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 )
 
+// ResponseMove is a single move in the list of moves that make up a Response
 type ResponseMove struct {
 	From     int `json:"from"`
 	To       int `json:"to"`
 	Soldiers int `json:"number_of_soldiers"`
 }
+
+// Request represents the pending response to the game command
 type Response struct {
 	Moves []*ResponseMove
 }

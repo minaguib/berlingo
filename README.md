@@ -30,6 +30,7 @@ Invoke the AI by passing it to _berlingo.Serve_
 
 For a working example which moves soldiers randomly, see berlingo1/main.go example
 
+API documentation at: http://godoc.org/github.com/minaguib/berlingo
 
 Invocation
 ==========

@@ -5,8 +5,9 @@ import (
 	"io"
 )
 
-/* This represents the request, semi-verbatim, as received from the berlin server */
-
+// Request represents the request, semi-verbatim, as received from the berlin server
+// AI writers are not expected to have to deal with Request, but rather higher-level parsed
+// representations such as Game, Map and Node
 type Request struct {
 	Action string
 	Infos  struct {
