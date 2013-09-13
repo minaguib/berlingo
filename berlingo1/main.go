@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/minaguib/berlingo"
 	"math/rand"
+	"time"
 )
 
 /*
@@ -35,4 +36,9 @@ func (ai *AI1) GameOver(game *berlingo.Game) {
 }
 
 func (ai *AI1) Ping(game *berlingo.Game) {
+}
+
+func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
+	berlingo.Serve(&AI1{})
 }
