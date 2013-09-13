@@ -10,7 +10,7 @@ type ResponseMove struct {
 	Soldiers int `json:"number_of_soldiers"`
 }
 type Response struct {
-	Moves   []*ResponseMove
+	Moves []*ResponseMove
 }
 
 func NewResponse() (*Response, error) {
