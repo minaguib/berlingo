@@ -48,7 +48,7 @@ func ServeHttp(ai AI, port string) {
 			fmt.Printf("Sending errors: %+v\n", err)
 			w.Write([]byte("Error"))
 		} else {
-			fmt.Printf("Sending moves respons\n")
+			fmt.Printf("Sending response moves\n")
 			w.Write(response_json)
 		}
 	})
