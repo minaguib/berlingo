@@ -10,7 +10,6 @@ type ResponseMove struct {
 	Soldiers int `json:"number_of_soldiers"`
 }
 type Response struct {
-	Request *Request
 	Moves   []*ResponseMove
 }
 
