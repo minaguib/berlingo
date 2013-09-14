@@ -2,9 +2,11 @@ package berlingo
 
 // Node represents a single node on the Map
 type Node struct {
-	Map                *Map
-	Id                 int
-	Type               *NodeType
+	Map  *Map
+	Id   int
+	Type *NodeType
+
+	Paths              map[int]*Node
 	Paths_Outbound     map[int]*Node
 	Paths_Inbound      map[int]*Node
 	Player_Id          int
@@ -16,6 +18,7 @@ type Node struct {
 func NewNode(m *Map) *Node {
 	return &Node{
 		Map:            m,
+		Paths:          make(map[int]*Node),
 		Paths_Outbound: make(map[int]*Node),
 		Paths_Inbound:  make(map[int]*Node),
 	}
@@ -23,8 +26,12 @@ func NewNode(m *Map) *Node {
 
 // Sets up a unidirectional link pointing from this node towards another
 func (node *Node) link_to(other *Node) {
+
 	node.Paths_Outbound[other.Id] = other
+	node.Paths[other.Id] = other
+
 	other.Paths_Inbound[node.Id] = node
+	other.Paths[node.Id] = node
 }
 
 func (node *Node) reset() {
@@ -59,4 +66,27 @@ func (node *Node) IsEnemy() bool {
 
 func (node *Node) IsControlled() bool {
 	return node.IsOwned() && node.Number_Of_Soldiers > 0
+}
+
+func (node *Node) HasOutboundPathTo(other_node *Node) bool {
+	_, ok := node.Paths_Outbound[other_node.Id]
+	return ok
+}
+
+func (node *Node) HasInboundPathTo(other_node *Node) bool {
+	_, ok := node.Paths_Inbound[other_node.Id]
+	return ok
+}
+
+func (node *Node) IsAdjacentTo(other_node *Node) bool {
+	_, ok := node.Paths[other_node.Id]
+	return ok
+}
+
+func (node *Node) AdjacentNodes() (nodes []*Node) {
+	nodes = make([]*Node, 0, len(node.Paths))
+	for _, node := range node.Paths {
+		nodes = append(nodes, node)
+	}
+	return nodes
 }

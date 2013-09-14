@@ -19,9 +19,9 @@ func (ai *AI1) GameStart(game *berlingo.Game) {
 
 func (ai *AI1) Turn(game *berlingo.Game) {
 	for _, node := range game.Map.ControlledNodes() {
-		for _, other_node := range node.Paths_Outbound {
+		for _, other_node := range node.AdjacentNodes() {
 			if node.Available_Soldiers < 1 {
-				continue
+				break
 			}
 			soldiers := rand.Intn(node.Available_Soldiers)
 			fmt.Println("Moving", soldiers, "soldiers from node", node.Id, "to node", other_node.Id)
