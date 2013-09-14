@@ -27,6 +27,14 @@ func (node *Node) link_to(other *Node) {
 	other.Paths_Inbound[node.Id] = node
 }
 
+func (node *Node) reset() {
+	node.Incoming_Soldiers = 0
+	node.Available_Soldiers = 0
+	if node.IsOwned() {
+		node.Available_Soldiers = node.Number_Of_Soldiers
+	}
+}
+
 // IsFree returns whether the node is free, or owned by any player
 func (node *Node) IsFree() bool {
 	return node.Player_Id < 0
@@ -51,12 +59,4 @@ func (node *Node) IsEnemy() bool {
 
 func (node *Node) IsControlled() bool {
 	return node.IsOwned() && node.Number_Of_Soldiers > 0
-}
-
-func (node *Node) reset() {
-	node.Incoming_Soldiers = 0
-	node.Available_Soldiers = 0
-	if node.IsOwned() {
-		node.Available_Soldiers = node.Number_Of_Soldiers
-	}
 }
