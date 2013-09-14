@@ -89,7 +89,9 @@ func (game *Game) Do() {
 
 // AddMove adds to the response queue the requested move characteristics
 func (game *Game) AddMove(from_node *Node, to_node *Node, num_soldiers int) (err error) {
-	if from_node.Available_Soldiers < num_soldiers {
+	if !from_node.IsOwned() {
+		return errors.New("Cannot move soldiers from a node you don't own")
+	} else if from_node.Available_Soldiers < num_soldiers {
 		return errors.New("Not enough available soldiers")
 	}
 	from_node.Available_Soldiers -= num_soldiers
