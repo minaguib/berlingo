@@ -64,6 +64,19 @@ func (node *Node) IsEnemy() bool {
 	return !node.IsFree() && !node.IsOwned()
 }
 
+// Returns one of "free", "enemy", "owned"
+func (node *Node) OwnershipStatus() string {
+	if node.IsFree() {
+		return "free"
+	} else if node.IsEnemy() {
+		return "enemy"
+	} else if node.IsOwned() {
+		return "owned"
+	} else {
+		panic("Illegal ownership status calculation")
+	}
+}
+
 func (node *Node) IsControlled() bool {
 	return node.IsOwned() && node.Number_Of_Soldiers > 0
 }
