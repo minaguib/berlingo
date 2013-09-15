@@ -26,48 +26,56 @@ func do(ai AI, r io.Reader) (response *Response, response_json []byte, err error
 	return response, response_json, nil
 }
 
+// Callback used to process an incoming HTTP request
+func serveHttpRequest(ai AI, w http.ResponseWriter, r *http.Request) {
+
+	log.Printf("HTTP: [%v] Processing %v %v", r.RemoteAddr, r.Method, r.RequestURI)
+
+	var input io.Reader
+	content_type := r.Header["Content-Type"][0]
+	switch content_type {
+	case "application/json":
+		input = r.Body
+	case "application/x-www-form-urlencoded":
+		// Detect & work-around bug https://github.com/thirdside/berlin-ai/issues/4
+		r.ParseForm()
+		j := `{
+				"action": "` + r.Form["action"][0] + `",
+				"infos": ` + r.Form["infos"][0] + `,
+				"map": ` + r.Form["map"][0] + `,
+				"state": ` + r.Form["state"][0] + `
+			}`
+		input = strings.NewReader(j)
+	default:
+		log.Printf("HTTP: Ignoring request with Content-Type %v", content_type)
+		return
+	}
+
+	_, response_json, err := do(ai, input)
+	if err != nil {
+		log.Printf("HTTP: Responding with error: %+v\n", err)
+		w.Write([]byte("Error"))
+	} else {
+		log.Printf("HTTP: Responding with moves\n")
+		w.Write(response_json)
+	}
+
+}
+
 // ServeHttp serves the given AI over HTTP on the given port
 func ServeHttp(ai AI, port string) {
 
 	log.Println("Starting HTTP server on port", port)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("HTTP: [%v] Processing %v %v", r.RemoteAddr, r.Method, r.RequestURI)
-
-		var input io.Reader
-		content_type := r.Header["Content-Type"][0]
-		switch content_type {
-		case "application/json":
-			input = r.Body
-		case "application/x-www-form-urlencoded":
-			// Detect & work-around bug https://github.com/thirdside/berlin-ai/issues/4
-			r.ParseForm()
-			j := `{
-				"action": "` + r.Form["action"][0] + `",
-				"infos": ` + r.Form["infos"][0] + `,
-				"map": ` + r.Form["map"][0] + `,
-				"state": ` + r.Form["state"][0] + `
-			}`
-			input = strings.NewReader(j)
-		default:
-			log.Printf("HTTP: Ignoring request with Content-Type %v", content_type)
-			return
-		}
-
-		_, response_json, err := do(ai, input)
-		if err != nil {
-			log.Printf("HTTP: Responding with error: %+v\n", err)
-			w.Write([]byte("Error"))
-		} else {
-			log.Printf("HTTP: Responding with moves\n")
-			w.Write(response_json)
-		}
+		serveHttpRequest(ai, w, r)
 	})
 
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		log.Println("HTTP Error:", err)
+		log.Println("HTTP Serving Error:", err)
 	}
+
 }
 
 // ServeHttp serves the given AI a single time
