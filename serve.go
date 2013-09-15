@@ -30,13 +30,14 @@ func do(ai AI, r io.Reader) (response *Response, response_json []byte, err error
 func serveHttpRequest(ai AI, w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("HTTP: [%v] Processing %v %v", r.RemoteAddr, r.Method, r.RequestURI)
+	w.Header().Set("Content-Type", "application/json")
 
 	var input io.Reader
-	content_type := r.Header["Content-Type"][0]
-	switch content_type {
-	case "application/json":
+	content_type := r.Header.Get("Content-Type")
+	switch {
+	case r.Method == "POST" && content_type == "application/json":
 		input = r.Body
-	case "application/x-www-form-urlencoded":
+	case r.Method == "POST" && content_type == "application/x-www-form-urlencoded":
 		// Detect & work-around bug https://github.com/thirdside/berlin-ai/issues/4
 		r.ParseForm()
 		j := `{
@@ -47,7 +48,8 @@ func serveHttpRequest(ai AI, w http.ResponseWriter, r *http.Request) {
 			}`
 		input = strings.NewReader(j)
 	default:
-		log.Printf("HTTP: Ignoring request with Content-Type %v", content_type)
+		log.Printf("HTTP: Replying with error")
+		w.Write([]byte(`{"error": "Invalid request"}`))
 		return
 	}
 
