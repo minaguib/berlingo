@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/minaguib/berlingo"
+	"log"
 	"math/rand"
 	"time"
 )
@@ -24,9 +24,9 @@ func (ai *AI1) Turn(game *berlingo.Game) {
 				break
 			}
 			soldiers := rand.Intn(node.Available_Soldiers)
-			fmt.Println("Moving", soldiers, "soldiers from node", node.Id, "to node", other_node.Id)
+			log.Println("Moving", soldiers, "soldiers from node", node.Id, "to node", other_node.Id)
 			if err := game.AddMove(node, other_node, soldiers); err != nil {
-				fmt.Println("Error moving:", err)
+				log.Println("Error moving:", err)
 			}
 		}
 	}

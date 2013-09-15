@@ -1,8 +1,8 @@
 package berlingo
 
 import (
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -29,34 +29,44 @@ func do(ai AI, r io.Reader) (response *Response, response_json []byte, err error
 // ServeHttp serves the given AI over HTTP on the given port
 func ServeHttp(ai AI, port string) {
 
-	fmt.Println("Starting HTTP server on port", port)
+	log.Println("Starting HTTP server on port", port)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Handling HTTP request from", r.RemoteAddr)
+		log.Printf("HTTP: [%v] Processing %v %v", r.RemoteAddr, r.Method, r.RequestURI)
 
-		r.ParseForm()
 		var input io.Reader
-		if r.Form["action"] != nil {
-			// Detect & work-around bug https://github.com/thirdside/berlin-ai/issues/4
-			j := `{ "action": "` + r.Form["action"][0] + `", "infos": ` + r.Form["infos"][0] + `, "map": ` + r.Form["map"][0] + `, "state": ` + r.Form["state"][0] + `}`
-			input = strings.NewReader(j)
-		} else {
+		content_type := r.Header["Content-Type"][0]
+		switch content_type {
+		case "application/json":
 			input = r.Body
+		case "application/x-www-form-urlencoded":
+			// Detect & work-around bug https://github.com/thirdside/berlin-ai/issues/4
+			r.ParseForm()
+			j := `{
+				"action": "` + r.Form["action"][0] + `",
+				"infos": ` + r.Form["infos"][0] + `,
+				"map": ` + r.Form["map"][0] + `,
+				"state": ` + r.Form["state"][0] + `
+			}`
+			input = strings.NewReader(j)
+		default:
+			log.Printf("HTTP: Ignoring request with Content-Type %v", content_type)
+			return
 		}
 
 		_, response_json, err := do(ai, input)
 		if err != nil {
-			fmt.Printf("Sending errors: %+v\n", err)
+			log.Printf("HTTP: Responding with error: %+v\n", err)
 			w.Write([]byte("Error"))
 		} else {
-			fmt.Printf("Sending response moves\n")
+			log.Printf("HTTP: Responding with moves\n")
 			w.Write(response_json)
 		}
 	})
 
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		fmt.Println("HTTP Error:", err)
+		log.Println("HTTP Error:", err)
 	}
 }
 
@@ -73,7 +83,7 @@ func ServeFile(ai AI, filename string) {
 	} else {
 		fh, err = os.Open(filename)
 		if err != nil {
-			fmt.Println("Error opening", filename, ": ", err)
+			log.Println("Error opening", filename, ": ", err)
 			return
 		}
 		defer fh.Close()
@@ -81,7 +91,7 @@ func ServeFile(ai AI, filename string) {
 
 	_, response_json, err := do(ai, fh)
 	if err != nil {
-		fmt.Println("Error processing request:", err)
+		log.Println("Error processing request:", err)
 		return
 	}
 	os.Stdout.Write(response_json)
