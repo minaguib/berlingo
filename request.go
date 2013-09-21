@@ -21,9 +21,9 @@ type Request struct {
 	}
 	Map struct {
 		Types []struct {
-			Name               string
-			Points             int
-			Number_Of_Soldiers int
+			Name              string
+			Points            int
+			Soldiers_Per_Turn int
 		}
 		Nodes []struct {
 			Id   int

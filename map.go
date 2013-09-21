@@ -1,9 +1,9 @@
 package berlingo
 
 type NodeType struct {
-	Name               string
-	Points             int
-	Number_Of_Soldiers int
+	Name              string
+	Points            int
+	Soldiers_Per_Turn int
 }
 
 // Map represents the map and the nodes in it
@@ -32,9 +32,9 @@ func NewMap(game *Game) (m *Map, err error) {
 
 	for _, rt := range request.Map.Types {
 		m.NodeTypes[rt.Name] = &NodeType{
-			Name:               rt.Name,
-			Points:             rt.Points,
-			Number_Of_Soldiers: rt.Number_Of_Soldiers,
+			Name:              rt.Name,
+			Points:            rt.Points,
+			Soldiers_Per_Turn: rt.Soldiers_Per_Turn,
 		}
 	}
 
