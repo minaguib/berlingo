@@ -13,6 +13,9 @@ type Node struct {
 	Number_Of_Soldiers int
 	Incoming_Soldiers  int
 	Available_Soldiers int
+	// Analysis is not populated by berlingo.  It's an area where your own AI may assign
+	// custom analysis values to nodes
+	Analysis interface{}
 }
 
 func NewNode(m *Map) *Node {
