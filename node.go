@@ -86,7 +86,7 @@ func (node *Node) HasOutboundPathTo(other_node *Node) bool {
 	return ok
 }
 
-func (node *Node) HasInboundPathTo(other_node *Node) bool {
+func (node *Node) HasInboundPathFrom(other_node *Node) bool {
 	_, ok := node.Paths_Inbound[other_node.Id]
 	return ok
 }
