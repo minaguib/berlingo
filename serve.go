@@ -64,6 +64,12 @@ func serveHttpRequest(ai AI, w http.ResponseWriter, r *http.Request) {
 
 }
 
+func InitAppEngine(ai AI) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		serveHttpRequest(ai, w, r)
+	})
+}
+
 // ServeHttp serves the given AI over HTTP on the given port
 func ServeHttp(ai AI, port string) {
 
