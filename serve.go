@@ -16,7 +16,7 @@ func do(ai AI, r io.Reader) (response *Response, response_json []byte, err error
 		return nil, nil, err
 	}
 
-	game.Do()
+	game.DoAction()
 
 	response_json, err = game.Response.ToJson()
 	if err != nil {

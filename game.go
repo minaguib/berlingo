@@ -73,8 +73,8 @@ func NewGame(ai AI, r io.Reader) (game *Game, err error) {
 
 }
 
-// Do invokes the appropriate AI method based on the Request Action
-func (game *Game) Do() {
+// DoAction invokes the appropriate AI method based on the Request Action
+func (game *Game) DoAction() {
 	switch game.Request.Action {
 	case "game_start":
 		game.Ai.GameStart(game)
