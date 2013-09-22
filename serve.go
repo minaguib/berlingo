@@ -41,14 +41,15 @@ func serveHttpRequest(ai AI, w http.ResponseWriter, r *http.Request) {
 		// Detect & work-around bug https://github.com/thirdside/berlin-ai/issues/4
 		r.ParseForm()
 		j := `{
-				"action": "` + r.Form["action"][0] + `",
-				"infos": ` + r.Form["infos"][0] + `,
-				"map": ` + r.Form["map"][0] + `,
-				"state": ` + r.Form["state"][0] + `
+				"action": "` + r.Form.Get("action") + `",
+				"infos": ` + r.Form.Get("infos") + `,
+				"map": ` + r.Form.Get("map") + `,
+				"state": ` + r.Form.Get("state") + `
 			}`
 		input = strings.NewReader(j)
 	default:
-		log.Printf("HTTP: Replying with error")
+		log.Printf("HTTP: Replying with error: Invalid request")
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(`{"error": "Invalid request"}`))
 		return
 	}
@@ -56,7 +57,8 @@ func serveHttpRequest(ai AI, w http.ResponseWriter, r *http.Request) {
 	_, response_json, err := do(ai, input)
 	if err != nil {
 		log.Printf("HTTP: Responding with error: %+v\n", err)
-		w.Write([]byte("Error"))
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error": "Internal server error"}`))
 	} else {
 		log.Printf("HTTP: Responding with moves\n")
 		w.Write(response_json)
