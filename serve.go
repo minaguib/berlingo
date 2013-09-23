@@ -1,3 +1,4 @@
+// Package berlingo is framework for writing AIs for berlin-ai.com.
 package berlingo
 
 import (
