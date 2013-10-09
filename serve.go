@@ -89,8 +89,8 @@ func ServeHttp(ai AI, port string) {
 
 }
 
-// ServeHttp serves the given AI a single time
-// Request is read from the given filename
+// ServeFile serves the given AI a single time
+// JSON request is read from the given filename
 // filename may be supplied as "-" to indicate STDIN
 func ServeFile(ai AI, filename string) {
 

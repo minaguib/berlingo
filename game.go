@@ -20,7 +20,7 @@ type Game struct {
 
 	// The json-parsed request received for the game.  Should normally not be needed by an AI author
 	Request *Request
-	// The pending response that will be returned for the current move
+	// The pending response that will be returned for the current action
 	Response *Response
 
 	// General information on the game
