@@ -42,6 +42,7 @@ type Request struct {
 	}
 }
 
+// NewRequest initializes a new request from the given io.Reader
 func NewRequest(r io.Reader) (request *Request, err error) {
 
 	request = new(Request)

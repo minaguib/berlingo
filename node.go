@@ -19,6 +19,7 @@ type Node struct {
 	paths_inbound  map[int]*Node
 }
 
+// NewNode initializes a new node on the given Map
 func NewNode(m *Map) *Node {
 	return &Node{
 		Map:            m,
@@ -29,7 +30,7 @@ func NewNode(m *Map) *Node {
 }
 
 // Sets up a unidirectional link pointing from this node towards another
-func (node *Node) link_to(other *Node) {
+func (node *Node) linkTo(other *Node) {
 
 	node.paths_outbound[other.Id] = other
 	node.paths[other.Id] = other
@@ -60,15 +61,20 @@ func (node *Node) IsOwned() bool {
 	return node.IsOwnedBy(node.Map.Game.Player_Id)
 }
 
-func (node *Node) IsOwnedBy(player_id int) bool {
-	return node.Player_Id == player_id
+// IsOwnedBy returns whether this node is owned by the given player_id
+func (node *Node) IsOwnedBy(playerID int) bool {
+	return node.Player_Id == playerID
 }
 
+// IsEnemy returns whether this node is owned by an enemy
 func (node *Node) IsEnemy() bool {
 	return !node.IsFree() && !node.IsOwned()
 }
 
+// OwnershipStatus returns a string representation of the node's ownership
+//
 // Returns one of "free", "enemy", "owned"
+//
 func (node *Node) OwnershipStatus() string {
 	if node.IsFree() {
 		return "free"
@@ -76,30 +82,36 @@ func (node *Node) OwnershipStatus() string {
 		return "enemy"
 	} else if node.IsOwned() {
 		return "owned"
-	} else {
-		panic("Illegal ownership status calculation")
 	}
+	panic("Illegal ownership status calculation")
 }
 
+// IsControlled returns whether this node is controlled by us
+//
+// "controlled" means we own the node and have at least 1 soldier on it
 func (node *Node) IsControlled() bool {
 	return node.IsOwned() && node.Number_Of_Soldiers > 0
 }
 
-func (node *Node) HasOutboundPathTo(other_node *Node) bool {
-	_, ok := node.paths_outbound[other_node.Id]
+// HasOutboundPathTo returns whether this node has an outbound path to otherNode
+func (node *Node) HasOutboundPathTo(otherNode *Node) bool {
+	_, ok := node.paths_outbound[otherNode.Id]
 	return ok
 }
 
-func (node *Node) HasInboundPathFrom(other_node *Node) bool {
-	_, ok := node.paths_inbound[other_node.Id]
+// HasInboundPathFrom returns whether this node has an inbound path from otherNode
+func (node *Node) HasInboundPathFrom(otherNode *Node) bool {
+	_, ok := node.paths_inbound[otherNode.Id]
 	return ok
 }
 
-func (node *Node) IsAdjacentTo(other_node *Node) bool {
-	_, ok := node.paths[other_node.Id]
+// IsAdjacentTo returns whether this node is adjacent to otherNode
+func (node *Node) IsAdjacentTo(otherNode *Node) bool {
+	_, ok := node.paths[otherNode.Id]
 	return ok
 }
 
+// AdjacentNodes returns an array of nodes adjacent to this node
 func (node *Node) AdjacentNodes() (nodes []*Node) {
 	nodes = make([]*Node, 0, len(node.paths))
 	for _, node := range node.paths {

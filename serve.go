@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func do(ai AI, r io.Reader) (response *Response, response_json []byte, err error) {
+func do(ai AI, r io.Reader) (response *Response, responseJSON []byte, err error) {
 
 	game, err := NewGame(ai, r)
 	if err != nil {
@@ -19,26 +19,26 @@ func do(ai AI, r io.Reader) (response *Response, response_json []byte, err error
 
 	game.DoAction()
 
-	response_json, err = game.Response.ToJson()
+	responseJSON, err = game.Response.ToJSON()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return response, response_json, nil
+	return response, responseJSON, nil
 }
 
 // Callback used to process an incoming HTTP request
-func serveHttpRequest(ai AI, w http.ResponseWriter, r *http.Request) {
+func serveHTTPRequest(ai AI, w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("HTTP: [%v] Processing %v %v", r.RemoteAddr, r.Method, r.RequestURI)
 	w.Header().Set("Content-Type", "application/json")
 
 	var input io.Reader
-	content_type := r.Header.Get("Content-Type")
+	contentType := r.Header.Get("Content-Type")
 	switch {
-	case r.Method == "POST" && content_type == "application/json":
+	case r.Method == "POST" && contentType == "application/json":
 		input = r.Body
-	case r.Method == "POST" && content_type == "application/x-www-form-urlencoded":
+	case r.Method == "POST" && contentType == "application/x-www-form-urlencoded":
 		// Detect & work-around bug https://github.com/thirdside/berlin-ai/issues/4
 		r.ParseForm()
 		j := `{
@@ -55,31 +55,32 @@ func serveHttpRequest(ai AI, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, response_json, err := do(ai, input)
+	_, responseJSON, err := do(ai, input)
 	if err != nil {
 		log.Printf("HTTP: Responding with error: %+v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{"error": "Internal server error"}`))
 	} else {
 		log.Printf("HTTP: Responding with moves\n")
-		w.Write(response_json)
+		w.Write(responseJSON)
 	}
 
 }
 
+// InitAppEngine allows usage on Google AppEngine
 func InitAppEngine(ai AI) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		serveHttpRequest(ai, w, r)
+		serveHTTPRequest(ai, w, r)
 	})
 }
 
-// ServeHttp serves the given AI over HTTP on the given port
-func ServeHttp(ai AI, port string) {
+// ServeHTTP serves the given AI over HTTP on the given port
+func ServeHTTP(ai AI, port string) {
 
 	log.Println("Starting HTTP server on port", port)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		serveHttpRequest(ai, w, r)
+		serveHTTPRequest(ai, w, r)
 	})
 
 	err := http.ListenAndServe(":"+port, nil)
@@ -108,26 +109,26 @@ func ServeFile(ai AI, filename string) {
 		defer fh.Close()
 	}
 
-	_, response_json, err := do(ai, fh)
+	_, responseJSON, err := do(ai, fh)
 	if err != nil {
 		log.Println("Error processing request:", err)
 		return
 	}
-	os.Stdout.Write(response_json)
+	os.Stdout.Write(responseJSON)
 }
 
-// Serve will inspect the CLI arguments and automatically call either ServeHttp or ServeFile
+// Serve will inspect the CLI arguments and automatically call either ServeHTTP or ServeFile
 func Serve(ai AI) {
 
-	port_or_filename := "-"
+	portOrFilename := "-"
 	if len(os.Args) >= 2 {
-		port_or_filename = os.Args[1]
+		portOrFilename = os.Args[1]
 	}
 
-	_, err := strconv.Atoi(port_or_filename)
+	_, err := strconv.Atoi(portOrFilename)
 	if err == nil {
-		ServeHttp(ai, port_or_filename)
+		ServeHTTP(ai, portOrFilename)
 	} else {
-		ServeFile(ai, port_or_filename)
+		ServeFile(ai, portOrFilename)
 	}
 }

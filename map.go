@@ -1,5 +1,6 @@
 package berlingo
 
+// NodeType declares the type of a node (re-usable characteristics)
 type NodeType struct {
 	Name              string
 	Points            int
@@ -12,13 +13,15 @@ type Map struct {
 	Directed  bool
 	NodeTypes map[string]*NodeType
 	Nodes     map[int]*Node
+
 	// Lazy caches
-	free_nodes       []*Node
-	owned_nodes      []*Node
-	enemy_nodes      []*Node
-	controlled_nodes []*Node
+	freeNodes       []*Node
+	ownedNodes      []*Node
+	enemyNodes      []*Node
+	controlledNodes []*Node
 }
 
+// NewMap initializes a new map
 func NewMap(game *Game) (m *Map, err error) {
 
 	request := game.Request
@@ -53,63 +56,67 @@ func NewMap(game *Game) (m *Map, err error) {
 	}
 
 	for _, rp := range request.Map.Paths {
-		m.Nodes[rp.From].link_to(m.Nodes[rp.To])
+		m.Nodes[rp.From].linkTo(m.Nodes[rp.To])
 		if m.Directed == false {
-			m.Nodes[rp.To].link_to(m.Nodes[rp.From])
+			m.Nodes[rp.To].linkTo(m.Nodes[rp.From])
 		}
 	}
 
 	return m, nil
 }
 
+// FreeNodes returns an array of nodes on this map that are free
 func (m *Map) FreeNodes() []*Node {
-	if m.free_nodes != nil {
-		return m.free_nodes
+	if m.freeNodes != nil {
+		return m.freeNodes
 	}
-	m.free_nodes = make([]*Node, 0, len(m.Nodes)/2)
+	m.freeNodes = make([]*Node, 0, len(m.Nodes)/2)
 	for _, node := range m.Nodes {
 		if node.IsFree() {
-			m.free_nodes = append(m.free_nodes, node)
+			m.freeNodes = append(m.freeNodes, node)
 		}
 	}
-	return m.free_nodes
+	return m.freeNodes
 }
 
+// OwnedNodes returns an array of nodes on this map that are owned
 func (m *Map) OwnedNodes() []*Node {
-	if m.owned_nodes != nil {
-		return m.owned_nodes
+	if m.ownedNodes != nil {
+		return m.ownedNodes
 	}
-	m.owned_nodes = make([]*Node, 0, len(m.Nodes)/2)
+	m.ownedNodes = make([]*Node, 0, len(m.Nodes)/2)
 	for _, node := range m.Nodes {
 		if node.IsOwned() {
-			m.owned_nodes = append(m.owned_nodes, node)
+			m.ownedNodes = append(m.ownedNodes, node)
 		}
 	}
-	return m.owned_nodes
+	return m.ownedNodes
 }
 
+// EnemyNodes returns an array of nodes on this map that are enemy nodes
 func (m *Map) EnemyNodes() []*Node {
-	if m.enemy_nodes != nil {
-		return m.enemy_nodes
+	if m.enemyNodes != nil {
+		return m.enemyNodes
 	}
-	m.enemy_nodes = make([]*Node, 0, len(m.Nodes)/2)
+	m.enemyNodes = make([]*Node, 0, len(m.Nodes)/2)
 	for _, node := range m.Nodes {
 		if node.IsEnemy() {
-			m.enemy_nodes = append(m.enemy_nodes, node)
+			m.enemyNodes = append(m.enemyNodes, node)
 		}
 	}
-	return m.enemy_nodes
+	return m.enemyNodes
 }
 
+// ControlledNodes returns an array of nodes on this map that are controlled by the current player
 func (m *Map) ControlledNodes() []*Node {
-	if m.controlled_nodes != nil {
-		return m.controlled_nodes
+	if m.controlledNodes != nil {
+		return m.controlledNodes
 	}
-	m.controlled_nodes = make([]*Node, 0, len(m.Nodes)/2)
+	m.controlledNodes = make([]*Node, 0, len(m.Nodes)/2)
 	for _, node := range m.Nodes {
 		if node.IsControlled() {
-			m.controlled_nodes = append(m.controlled_nodes, node)
+			m.controlledNodes = append(m.controlledNodes, node)
 		}
 	}
-	return m.controlled_nodes
+	return m.controlledNodes
 }
