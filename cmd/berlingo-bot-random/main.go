@@ -12,12 +12,12 @@ This example mimicks the functionality in the berlin-ai demo ruby gem at:
 https://github.com/thirdside/berlin-ai/
 */
 
-type AI1 struct{}
+type RandomAI struct{}
 
-func (ai *AI1) GameStart(game *berlingo.Game) {
+func (ai *RandomAI) GameStart(game *berlingo.Game) {
 }
 
-func (ai *AI1) Turn(game *berlingo.Game) {
+func (ai *RandomAI) Turn(game *berlingo.Game) {
 	for _, node := range game.Map.ControlledNodes() {
 		for _, other_node := range node.AdjacentNodes() {
 			if node.Available_Soldiers < 1 {
@@ -32,13 +32,13 @@ func (ai *AI1) Turn(game *berlingo.Game) {
 	}
 }
 
-func (ai *AI1) GameOver(game *berlingo.Game) {
+func (ai *RandomAI) GameOver(game *berlingo.Game) {
 }
 
-func (ai *AI1) Ping(game *berlingo.Game) {
+func (ai *RandomAI) Ping(game *berlingo.Game) {
 }
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
-	berlingo.Serve(&AI1{})
+	berlingo.Serve(&RandomAI{})
 }

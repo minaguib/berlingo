@@ -28,15 +28,15 @@ func (ai *AwesomeAi) Ping(game *berlingo.Game) {
 
 Invoke the AI by passing it to _berlingo.Serve_
 
-For a working example which moves soldiers randomly, see berlingo1/main.go example
+For a working example which moves soldiers randomly, see cmd/berlingo-bot-random/main.go example
 
 API documentation at: http://godoc.org/github.com/minaguib/berlingo
 
 Invocation
 ==========
-The example berlingo1/main.go and any similar AIs you write can be invoked in any of the following manners:
- * ./berlingo1          - this will start the AI in single-request local mode - the request JSON will be read from STDIN
- * ./berlingo1 filename - this will start the AI in single-request local mode - the request JSON will be read from the given filename
- * ./berlingo1 port     - this will start the AI in multi-request web mode    - the request JSON will be received over HTTP
+The example cmd/berlingo-bot-random/main.go and any similar AIs you write can be invoked in any of the following manners:
+ * ./botname            - this will start the AI in single-request local mode - the request JSON will be read from STDIN
+ * ./botname filename   - this will start the AI in single-request local mode - the request JSON will be read from the given filename
+ * ./botname port       - this will start the AI in multi-request web mode    - the request JSON will be received over HTTP
 
 In web mode, you may POST request JSONs to your bot, or sign your AI up at http://berlin-ai.com to duel other AIs
