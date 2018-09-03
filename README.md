@@ -1,3 +1,8 @@
+abandonware notice
+==================
+
+With berlin-ai.com itself falling off the map, this client is now abandonware and exists only to serve historical curiosities.
+
 berlingo
 ========
 
